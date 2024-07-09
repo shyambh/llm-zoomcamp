@@ -5,7 +5,6 @@ from elasticsearch import Elasticsearch
 es = Elasticsearch("http://localhost:9200")
 es.info()
 
-API_KEY="abcdefgh"
 PATH_TO_DATA = Path("data/documents.json")
 
 documents = []
