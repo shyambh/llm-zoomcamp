@@ -128,16 +128,6 @@ index_settings = {
     },
 }
 
-# create_index_if_not_already_created("course-questions", PATH_TO_DATA, index_settings)
-
-# # Retrieving answer from the docs
-# user_question = """
-# how can I run kafka?
-# """
-
-# answer = qa_bot(user_question)
-# print(answer)
-
 
 def main():
     create_index_if_not_already_created(
@@ -146,7 +136,7 @@ def main():
 
     # Retrieving answer from the docs
     user_question = """
-    how can I run kafka?
+    how can I get the certificate?
     """
 
     answer = qa_bot(user_question)
