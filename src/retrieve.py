@@ -2,15 +2,15 @@ import json
 from pathlib import Path
 from tqdm.auto import tqdm
 from elasticsearch import Elasticsearch
-from openai import OpenAI
+from ollama import Client
 
 
 PATH_TO_DATA = Path("../data/documents.json")
 
 documents = []
 
-# Instantiate the OpenAI client
-openai_client = OpenAI()
+# Instantiate the Ollama client
+ollama_client = Client(host="http://localhost:11434/v1/")
 
 # Context template
 context_template = """
@@ -23,7 +23,7 @@ Answer: {text}
 # Building the prompt template which includes placeholders for question and the context
 prompt_template = """
 You're a course teaching assistant. Answer the user QUESTION based on CONTEXT - the documents retrieved from our FAQ database. 
-Only use the facts from the CONTEXT. Don't use other information outside of the provided CONTEXT. "
+Only use the facts from the CONTEXT. Don't use other information outside of the provided CONTEXT. If no answer if found from the CONTEXT, just reply with 'Sorry, I couldn\'t find what you're looking for.' "
 
 QUESTION: {user_question}
 
@@ -81,11 +81,9 @@ def build_prompt(prompt_template: str, user_question, documents):
     return prompt
 
 
-def ask_openai(client: OpenAI, prompt, model="gpt-3.5-turbo"):
-    response = client.chat.completions.create(
-        model=model, messages=[{"role": "user", "content": prompt}]
-    )
-    answer = response.choices[0].message.content
+def ask_ollama(client: Client, prompt, model="llama3"):
+    response = client.chat(model=model, messages=[{"role": "user", "content": prompt}])
+    answer = response["message"]["content"]
     return answer
 
 
@@ -109,7 +107,7 @@ def qa_bot(user_question, course: str = None):
 
     context_docs = retrieve_documents(user_question, course=course.strip())
     prompt = build_prompt(prompt_template, user_question, context_docs)
-    answer = ask_openai(openai_client, prompt)
+    answer = ask_ollama(ollama_client, prompt)
     return answer
 
 
